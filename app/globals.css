@@ -562,7 +562,7 @@ a { text-decoration: none; color: inherit; }
 
 .usp-track {
   display: flex;
-  animation: uspScroll 34s linear infinite;
+  animation: uspScroll 18s linear infinite;
   will-change: transform;
 }
 .usp-track:hover { animation-play-state: paused; }
@@ -1569,6 +1569,7 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 768px) {
   :root { --header-h: 80px; }
+  .usp-track { animation-duration: 10s; }
   .topbar { display: none; }
   .nav { display: none; }
   .hamburger { display: flex; }
