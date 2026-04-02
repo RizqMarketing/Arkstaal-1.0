@@ -345,14 +345,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="decorative-cards">
-            {t.decorative.cards.map(card => (
-              <div key={card.title} className="decorative-card">
-                <div className="decorative-card-title">{card.title}</div>
-                <div className="decorative-card-desc">{card.desc}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
