@@ -69,6 +69,8 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false)
   const [statsStarted, setStatsStarted] = useState(false)
   const [faqOpen, setFaqOpen] = useState<number | null>(null)
+  const [quoteOpen, setQuoteOpen] = useState(false)
+  const [quoteSent, setQuoteSent] = useState(false)
   const statsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -78,9 +80,15 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? 'hidden' : ''
+    document.body.style.overflow = (mobileMenuOpen || quoteOpen) ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [mobileMenuOpen])
+  }, [mobileMenuOpen, quoteOpen])
+
+  const handleQuoteSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setQuoteSent(true)
+    setTimeout(() => { setQuoteSent(false); setQuoteOpen(false) }, 3000)
+  }
 
   useEffect(() => {
     if (!statsRef.current) return
@@ -152,10 +160,10 @@ export default function Home() {
                     <div className="dropdown-footer-title">{t.quote.dropdownCta}</div>
                     <div className="dropdown-footer-sub">{t.quote.dropdownCtaSub}</div>
                   </div>
-                  <a href="/contact" className="dropdown-footer-btn">
+                  <button type="button" onClick={() => setQuoteOpen(true)} className="dropdown-footer-btn">
                     {t.quote.dropdownCta}
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -164,10 +172,10 @@ export default function Home() {
             <a href="#about" className="nav-item" onClick={() => setMobileMenuOpen(false)}>{t.nav.about}</a>
             <a href="/contact" className="nav-item" onClick={() => setMobileMenuOpen(false)}>{t.nav.contact}</a>
             <div className="mobile-nav-cta">
-              <a href="/contact" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-cta-btn">
+              <button type="button" onClick={() => { setMobileMenuOpen(false); setQuoteOpen(true) }} className="mobile-nav-cta-btn">
                 {t.quote.dropdownCta}
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </a>
+              </button>
               <div className="mobile-nav-contacts">
                 <a href="tel:+31614266177" className="mobile-nav-contact-item">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11.05 8.775l-1.625-.715a.65.65 0 00-.715.13l-.715.715a7.8 7.8 0 01-3.575-3.575l.715-.715a.65.65 0 00.13-.715L4.55 2.275A.65.65 0 003.9 1.95L2.275 2.275A.65.65 0 001.95 2.925C1.95 8.125 5.85 12.025 11.05 12.025a.65.65 0 00.65-.585l.325-1.625a.65.65 0 00-.325-.715z" fill="currentColor"/></svg>
@@ -187,7 +195,7 @@ export default function Home() {
               <span className="lang-sep">|</span>
               <span className={lang === 'en' ? 'lang-active' : ''}>EN</span>
             </button>
-            <a href="/contact" className="btn btn-primary">{t.nav.requestQuote}</a>
+            <button type="button" onClick={() => setQuoteOpen(true)} className="btn btn-primary">{t.nav.requestQuote}</button>
             <button className="hamburger" onClick={() => setMobileMenuOpen(o => !o)} aria-label="Menu">
               <span style={mobileMenuOpen ? { transform: 'rotate(45deg) translate(5px, 5px)' } : {}} />
               <span style={mobileMenuOpen ? { opacity: 0 } : {}} />
@@ -272,7 +280,7 @@ export default function Home() {
 
           <div className="products-footer">
             <p style={{ fontSize: '13.5px', color: 'var(--text-3)' }}>{t.products.notFound}</p>
-            <a href="/contact" className="btn btn-outline">{t.products.requestQuote}</a>
+            <button type="button" onClick={() => setQuoteOpen(true)} className="btn btn-outline">{t.products.requestQuote}</button>
           </div>
         </div>
       </section>
@@ -484,6 +492,69 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* QUOTE MODAL */}
+      {quoteOpen && (
+        <div className="qmodal-overlay" onClick={() => setQuoteOpen(false)}>
+          <div className="qmodal" onClick={e => e.stopPropagation()}>
+            <div className="qmodal-header">
+              <div>
+                <div className="qmodal-label">Arkstaal B.V.</div>
+                <h2 className="qmodal-title">{t.nav.requestQuote}</h2>
+              </div>
+              <button className="qmodal-close" onClick={() => setQuoteOpen(false)} aria-label="Sluiten">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 3L15 15M15 3L3 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+            {quoteSent ? (
+              <div className="qmodal-success">
+                <div className="qmodal-success-icon">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#1A2332"/><path d="M8 16l5.5 5.5L24 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </div>
+                <h3>{t.contact.sent}</h3>
+                <p>{lang === 'nl' ? 'We nemen zo snel mogelijk contact met u op.' : 'We will get back to you as soon as possible.'}</p>
+              </div>
+            ) : (
+              <form className="qmodal-form" onSubmit={handleQuoteSubmit}>
+                <div className="qmodal-row">
+                  <div className="qmodal-field">
+                    <label>{t.contact.name}</label>
+                    <input type="text" placeholder="Jan de Vries" required />
+                  </div>
+                  <div className="qmodal-field">
+                    <label>{t.contact.company}</label>
+                    <input type="text" placeholder="Bedrijfsnaam B.V." />
+                  </div>
+                </div>
+                <div className="qmodal-row">
+                  <div className="qmodal-field">
+                    <label>{t.contact.emailField}</label>
+                    <input type="email" placeholder="jan@bedrijf.nl" required />
+                  </div>
+                  <div className="qmodal-field">
+                    <label>{t.contact.phoneField}</label>
+                    <input type="tel" placeholder="+31…" />
+                  </div>
+                </div>
+                <div className="qmodal-field">
+                  <label>{t.contact.subject}</label>
+                  <select>
+                    <option value="">{t.contact.selectTopic}</option>
+                    {t.contact.topics.map(topic => <option key={topic}>{topic}</option>)}
+                  </select>
+                </div>
+                <div className="qmodal-field">
+                  <label>{t.contact.message}</label>
+                  <textarea placeholder={t.contact.messagePlaceholder} rows={4} />
+                </div>
+                <button type="submit" className="qmodal-submit">{t.contact.send}
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M9 3L14 8L9 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
     </>
   )
