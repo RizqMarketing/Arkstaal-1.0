@@ -565,11 +565,10 @@ a { text-decoration: none; color: inherit; }
   animation: uspScroll 18s linear infinite;
   will-change: transform;
 }
-.usp-track:hover { animation-play-state: paused; }
 
 @keyframes uspScroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 .usp-item {
@@ -1569,7 +1568,9 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 768px) {
   :root { --header-h: 80px; }
-  .usp-track { animation-duration: 6s; }
+  .usp-track { animation-duration: 10s; }
+  .usp-item { padding: 11px 16px; font-size: 11px; gap: 7px; }
+  .usp-dot { font-size: 6px; }
   .topbar { display: none; }
   .nav { display: none; }
   .hamburger { display: flex; }
