@@ -60,7 +60,6 @@ export const translations = {
         brass: 'Messing',
         nonferrous: 'Non-ferro',
         fittings: 'Fittingen',
-        plastics: 'Kunststof',
       },
       badges: { Popular: 'Populair', Specialty: 'Specialiteit' },
       items: {
@@ -106,12 +105,6 @@ export const translations = {
         fittings: [
           { title: 'Buisfittingen', desc: 'Bochten, T-stukken, verloopstukken en doppen in roestvrij staal en speciale legeringen. DIN/ANSI normen.' },
           { title: 'Flenzen', desc: 'Insteekflenzen, lashalsflenzen en blindflenzen conform DIN en ANSI normen.' },
-        ],
-        plastics: [
-          { title: 'Delrin (POM)', desc: 'Hoge stijfheid, lage wrijving en uitstekende maatnauwkeurigheid. Ideaal voor precisieonderdelen in mechanische en elektrische toepassingen.' },
-          { title: 'Polyethyleen (PE)', desc: 'Slagvast, chemisch bestendig en eenvoudig te bewerken. Beschikbaar als platen, staven en buizen voor uiteenlopende industriële toepassingen.' },
-          { title: 'Polyamide / Kestamid (PA)', desc: 'Hoge slijtvastheid en mechanische sterkte. Gegoten polyamide voor lagers, glijlagers en constructieve kunststofonderdelen.' },
-          { title: 'Teflon (PTFE)', desc: 'Uitstekende chemische bestendigheid en thermische stabiliteit. Geschikt voor afdichtingen, glij-elementen en toepassingen in agressieve omgevingen.' },
         ],
       },
     },
@@ -347,7 +340,6 @@ export const translations = {
         brass: 'Brass',
         nonferrous: 'Non-ferrous',
         fittings: 'Fittings',
-        plastics: 'Plastics',
       },
       badges: { Popular: 'Popular', Specialty: 'Specialty' },
       items: {
@@ -393,12 +385,6 @@ export const translations = {
         fittings: [
           { title: 'Pipe Fittings', desc: 'Elbows, tees, reducers and caps in stainless steel and special alloys. DIN/ANSI standards.' },
           { title: 'Flanges', desc: 'Slip-on, weld-neck and blind flanges to DIN and ANSI standards.' },
-        ],
-        plastics: [
-          { title: 'Delrin (POM)', desc: 'High stiffness, low friction and excellent dimensional stability. Ideal for precision mechanical and electrical components.' },
-          { title: 'Polyethylene (PE)', desc: 'Impact-resistant, chemically resistant and easy to machine. Available as sheets, rods and tubes for a wide range of industrial applications.' },
-          { title: 'Polyamide / Kestamid (PA)', desc: 'High wear resistance and mechanical strength. Cast polyamide for bearings, slide bearings and structural plastic components.' },
-          { title: 'Teflon (PTFE)', desc: 'Outstanding chemical resistance and thermal stability. Suitable for seals, sliding elements and applications in aggressive environments.' },
         ],
       },
     },

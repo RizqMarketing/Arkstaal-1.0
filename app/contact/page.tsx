@@ -32,7 +32,7 @@ export default function ContactPage() {
       <header className={`header${scrolled ? ' scrolled' : ''}`}>
         <div className="header-inner">
           <a href="/" className="logo">
-            <img src="/logo.png" alt="Arkstaal B.V." className="header-logo-img" style={{ height: '136px', width: 'auto', background: 'white', padding: '3px 8px', borderRadius: '4px' }} />
+            <img src="/logo.png" alt="Arkstaal B.V." className="header-logo-img" style={{ height: '136px', width: 'auto', background: 'white', padding: '3px 8px', borderRadius: '4px', marginTop: '12px' }} />
           </a>
 
           <nav className={`nav${mobileMenuOpen ? ' mobile-open' : ''}`}>

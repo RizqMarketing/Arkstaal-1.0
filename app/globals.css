@@ -32,7 +32,7 @@
   --shadow: 0 2px 8px rgba(0,0,0,.1);
   --shadow-md: 0 4px 16px rgba(0,0,0,.1);
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --header-h: 118px;
+  --header-h: 88px;
 }
 
 html, body {
@@ -1509,6 +1509,30 @@ a { text-decoration: none; color: inherit; }
   .products-grid { grid-template-columns: 1fr; }
   .sustain-metrics { grid-template-columns: 1fr; }
   .hero-promises-inner { align-items: flex-start; padding: 0 24px; }
+  .material-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    overflow-x: visible;
+    border-bottom: none;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    border: 1.5px solid var(--border);
+    border-bottom: 1.5px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 0;
+    padding: 10px 8px;
+    font-size: 13px;
+    text-align: center;
+    background: white;
+  }
+  .tab-btn.active {
+    background: var(--navy);
+    color: white;
+    border-color: var(--navy);
+  }
+  .tab-btn:hover:not(.active) { background: var(--bg-soft); color: var(--navy); }
 }
 
 /* Mobile nav */

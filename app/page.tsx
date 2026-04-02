@@ -3,14 +3,17 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLanguage } from './components/LanguageContext'
 
-const TABS = ['aluminium', 'steel', 'stainless', 'copper', 'brass', 'nonferrous', 'fittings', 'plastics'] as const
+const TABS = ['aluminium', 'steel', 'stainless', 'copper', 'brass', 'nonferrous', 'fittings'] as const
 type Tab = typeof TABS[number]
 
 const TAB_PHOTOS: Partial<Record<Tab, string>> = {
   aluminium: '/slider1.webp',
-  steel: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&h=200&q=75',
+  steel: '/steel-banner.png',
   stainless: '/stainless-banner.webp',
-  copper: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&h=200&q=75',
+  copper: '/copper-banner.png',
+  brass: '/brass-banner.png',
+  fittings: '/fittings-banner.png',
+  nonferrous: '/nonferrous-banner.png',
 }
 
 const TAB_PRODUCT_IMAGES: Partial<Record<Tab, (string | undefined)[]>> = {
@@ -26,7 +29,6 @@ const TAB_ICON_COLORS: Record<Tab, string> = {
   brass: '#B8A030',
   nonferrous: '#94A3B8',
   fittings: '#94A3B8',
-  plastics: '#7CB8A0',
 }
 
 const DECORATIVE_FINISHES = [
@@ -107,7 +109,7 @@ export default function Home() {
       <header className={`header${scrolled ? ' scrolled' : ''}`}>
         <div className="header-inner">
           <a href="#" className="logo">
-            <img src="/logo.png" alt="Arkstaal B.V." className="header-logo-img" style={{ height: '136px', width: 'auto', background: 'white', padding: '3px 8px', borderRadius: '4px' }} />
+            <img src="/logo.png" alt="Arkstaal B.V." className="header-logo-img" style={{ height: '136px', width: 'auto', background: 'white', padding: '3px 8px', borderRadius: '4px', marginTop: '12px' }} />
           </a>
 
           <nav className={`nav${mobileMenuOpen ? ' mobile-open' : ''}`}>
