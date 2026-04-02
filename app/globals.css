@@ -1569,7 +1569,7 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 768px) {
   :root { --header-h: 80px; }
-  .usp-track { animation-duration: 10s; }
+  .usp-track { animation-duration: 6s; }
   .topbar { display: none; }
   .nav { display: none; }
   .hamburger { display: flex; }
