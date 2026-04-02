@@ -1,20 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
+import { useLanguage } from './components/LanguageContext'
 
-const TABS = ['aluminium', 'steel', 'stainless', 'copper', 'brass', 'nonferrous', 'fittings'] as const
+const TABS = ['aluminium', 'steel', 'stainless', 'copper', 'brass', 'nonferrous', 'fittings', 'plastics'] as const
 type Tab = typeof TABS[number]
-
-const TAB_LABELS: Record<Tab, string> = {
-  aluminium: 'Aluminium',
-  steel: 'Steel',
-  stainless: 'Stainless Steel',
-  copper: 'Copper',
-  brass: 'Brass',
-  nonferrous: 'Non-ferrous',
-  fittings: 'Fittings',
-}
 
 const TAB_PHOTOS: Partial<Record<Tab, string>> = {
   aluminium: '/slider1.webp',
@@ -23,43 +13,20 @@ const TAB_PHOTOS: Partial<Record<Tab, string>> = {
   copper: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&h=200&q=75',
 }
 
-const TAB_PRODUCTS: Record<Tab, { title: string; desc: string; badge?: string; iconColor: string; img?: string }[]> = {
-  aluminium: [
-    { title: 'Sheets & Plates', desc: 'High-quality, low-tension flat aluminium. Optimally processable in laser cutters and other machines without loss of quality.', badge: 'Popular', iconColor: '#CBD5E1', img: '/al-sheets.png' },
-    { title: 'Tubes & Profiles', desc: 'Round, square and rectangular aluminium tubes. Extruded profiles in standard and custom dimensions.', iconColor: '#CBD5E1', img: '/al-tubes.png' },
-    { title: 'Bars & Rods', desc: 'Solid and hollow bars for machining, construction and engineering applications.', iconColor: '#CBD5E1', img: '/al-bars.gif' },
-    { title: 'Open Sections', desc: 'Angles, channels, I-beams and T-sections in aluminium alloys for structural applications.', iconColor: '#94A3B8', img: '/al-sections.gif' },
-  ],
-  steel: [
-    { title: 'Sheets & Plates', desc: 'Hot and cold rolled steel sheets in various grades and thicknesses for structural and industrial applications.', badge: 'Popular', iconColor: '#64748B' },
-    { title: 'Structural Steel', desc: 'HEA, HEB, IPE, UNP beams and columns for construction and civil engineering.', iconColor: '#64748B' },
-    { title: 'Bars & Rods', desc: 'Round, square and flat bars in various steel grades for machining and construction.', iconColor: '#64748B' },
-    { title: 'Steel Tubes', desc: 'Seamless and welded steel tubes for mechanical and structural applications.', iconColor: '#64748B' },
-  ],
-  stainless: [
-    { title: 'Sheets & Coils', desc: 'Standard and decorative stainless steel sheets. Hot rolled, cold rolled and coil/strip in various grades.', badge: 'Specialty', iconColor: '#B0BEC5', img: '/al-sheets.png' },
-    { title: 'Pipes & Tubes', desc: 'Stainless steel pipes, square and rectangular tubes for mechanical and visual projects.', iconColor: '#B0BEC5', img: '/ss-pipes.png' },
-    { title: 'Flanges & Fittings', desc: 'Pipes, flanges and fittings in stainless steel and special alloys. Material certificates provided.', iconColor: '#B0BEC5', img: '/ss-flanges.webp' },
-    { title: 'Bars & Flat Types', desc: 'Stainless angle bars, flat bars, rods and profiles for a wide range of industrial applications.', iconColor: '#B0BEC5', img: '/ss-bars.jpg' },
-  ],
-  copper: [
-    { title: 'Copper Sheets', desc: 'High-purity copper sheets for electrical and architectural applications.', iconColor: '#BF7F3A' },
-    { title: 'Copper Tubes', desc: 'Copper tube in straight lengths and coils for various applications.', iconColor: '#BF7F3A' },
-    { title: 'Copper Bars', desc: 'Flat and round bars for electrical and industrial use.', iconColor: '#BF7F3A' },
-  ],
-  brass: [
-    { title: 'Brass Sheets', desc: 'CuZn alloys for decorative, architectural and functional applications.', iconColor: '#B8A030' },
-    { title: 'Brass Bars & Rods', desc: 'Free-machining brass for automatic lathes and precision components.', iconColor: '#B8A030' },
-    { title: 'Brass Tubes', desc: 'Drawn brass tubes in round profiles for hydraulic and decorative applications.', iconColor: '#B8A030' },
-  ],
-  nonferrous: [
-    { title: 'Titanium', desc: 'Grade 2 and Grade 5 titanium for aerospace, medical and chemical applications.', iconColor: '#94A3B8' },
-    { title: 'Zinc', desc: 'Pure zinc and alloys for die casting, galvanising and corrosion protection applications.', iconColor: '#94A3B8' },
-  ],
-  fittings: [
-    { title: 'Pipe Fittings', desc: 'Elbows, tees, reducers and caps in stainless steel and special alloys. DIN/ANSI standards.', iconColor: '#94A3B8' },
-    { title: 'Flanges', desc: 'Slip-on, weld-neck and blind flanges to DIN and ANSI standards.', iconColor: '#94A3B8' },
-  ],
+const TAB_PRODUCT_IMAGES: Partial<Record<Tab, (string | undefined)[]>> = {
+  aluminium: ['/al-sheets.png', '/al-tubes.png', '/al-bars.gif', '/al-sections.gif'],
+  stainless: ['/al-sheets.png', '/ss-pipes.png', '/ss-flanges.webp', '/ss-bars.jpg'],
+}
+
+const TAB_ICON_COLORS: Record<Tab, string> = {
+  aluminium: '#CBD5E1',
+  steel: '#64748B',
+  stainless: '#B0BEC5',
+  copper: '#BF7F3A',
+  brass: '#B8A030',
+  nonferrous: '#94A3B8',
+  fittings: '#94A3B8',
+  plastics: '#7CB8A0',
 }
 
 const DECORATIVE_FINISHES = [
@@ -94,21 +61,24 @@ function CountUp({ to, from = 0, suffix = '', duration = 1800, started }: { to: 
 }
 
 export default function Home() {
+  const { lang, t, toggle } = useLanguage()
   const [activeTab, setActiveTab] = useState<Tab>('aluminium')
-  const [searchOpen, setSearchOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [newsletterEmail, setNewsletterEmail] = useState('')
-  const [newsletterState, setNewsletterState] = useState<'idle' | 'success'>('idle')
   const [statsStarted, setStatsStarted] = useState(false)
+  const [faqOpen, setFaqOpen] = useState<number | null>(null)
   const statsRef = useRef<HTMLDivElement>(null)
-  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [mobileMenuOpen])
 
   useEffect(() => {
     if (!statsRef.current) return
@@ -128,29 +98,8 @@ export default function Home() {
     return () => io.disconnect()
   }, [])
 
-  useEffect(() => {
-    if (searchOpen) setTimeout(() => searchInputRef.current?.focus(), 200)
-  }, [searchOpen])
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setSearchOpen(false)
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        setSearchOpen(o => !o)
-      }
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [])
-
-  const handleNewsletter = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newsletterEmail.includes('@')) return
-    setNewsletterState('success')
-    setNewsletterEmail('')
-    setTimeout(() => setNewsletterState('idle'), 4000)
-  }
+  const tabItems = t.products.items[activeTab]
+  const tabImages = TAB_PRODUCT_IMAGES[activeTab]
 
   return (
     <>
@@ -158,66 +107,85 @@ export default function Home() {
       <header className={`header${scrolled ? ' scrolled' : ''}`}>
         <div className="header-inner">
           <a href="#" className="logo">
-            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-              <rect width="34" height="34" fill="#1A2332"/>
-              <path d="M7 26L17 8L27 26H21L17 18L13 26H7Z" fill="white"/>
-              <rect x="7" y="27" width="20" height="2.5" fill="#E8500A"/>
-            </svg>
-            <span className="logo-text">Arkstaal</span>
+            <img src="/logo.png" alt="Arkstaal B.V." className="header-logo-img" style={{ height: '136px', width: 'auto', background: 'white', padding: '3px 8px', borderRadius: '4px' }} />
           </a>
 
           <nav className={`nav${mobileMenuOpen ? ' mobile-open' : ''}`}>
             <div className="nav-item has-dropdown">
-              Products
+              {t.nav.products}
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2.5 4L5.5 7L8.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               <div className="dropdown">
                 <div className="dropdown-grid">
                   <div className="dropdown-col">
-                    <div className="dropdown-label">Stainless Steel</div>
-                    <a href="#">Sheets & Coils</a>
-                    <a href="#">Pipes & Tubes</a>
-                    <a href="#">Flanges & Fittings</a>
-                    <a href="#">Bars & Flat Types</a>
-                    <a href="#">Decorative Finishes</a>
+                    <div className="dropdown-label">{t.nav.stainlessSteel}</div>
+                    <a href="#">{t.nav.sheetsCoils}</a>
+                    <a href="#">{t.nav.pipesTubes}</a>
+                    <a href="#">{t.nav.flangesFittings}</a>
+                    <a href="#">{t.nav.barsFlatTypes}</a>
+                    <a href="#">{t.nav.decorativeFinishes}</a>
                   </div>
                   <div className="dropdown-col">
-                    <div className="dropdown-label">Aluminium</div>
-                    <a href="#">Sheets & Plates</a>
-                    <a href="#">Tubes & Profiles</a>
-                    <a href="#">Bars & Rods</a>
-                    <a href="#">Anodized</a>
+                    <div className="dropdown-label">{t.nav.aluminium}</div>
+                    <a href="#">{t.nav.sheetsPlates}</a>
+                    <a href="#">{t.nav.tubesProfiles}</a>
+                    <a href="#">{t.nav.barsRods}</a>
+                    <a href="#">{t.nav.anodized}</a>
                   </div>
                   <div className="dropdown-col">
-                    <div className="dropdown-label">Other Metals</div>
-                    <a href="#">Copper</a>
-                    <a href="#">Brass</a>
-                    <a href="#">Non-ferrous</a>
+                    <div className="dropdown-label">{t.nav.otherMetals}</div>
+                    <a href="#">{t.nav.copper}</a>
+                    <a href="#">{t.nav.brass}</a>
+                    <a href="#">{t.nav.nonFerrous}</a>
                   </div>
                   <div className="dropdown-col">
-                    <div className="dropdown-label">Services</div>
-                    <a href="#">Foiling & Decoiling</a>
-                    <a href="#">Anodizing</a>
-                    <a href="#">Custom cutting</a>
-                    <a href="#">Material certificates</a>
+                    <div className="dropdown-label">{t.nav.services}</div>
+                    <a href="#">{t.nav.foilingDecoiling}</a>
+                    <a href="#">{t.nav.anodizing}</a>
+                    <a href="#">{t.nav.customCutting}</a>
+                    <a href="#">{t.nav.materialCerts}</a>
                   </div>
+                </div>
+                <div className="dropdown-footer">
+                  <div className="dropdown-footer-text">
+                    <div className="dropdown-footer-title">{t.quote.dropdownCta}</div>
+                    <div className="dropdown-footer-sub">{t.quote.dropdownCtaSub}</div>
+                  </div>
+                  <a href="/contact" className="dropdown-footer-btn">
+                    {t.quote.dropdownCta}
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </a>
                 </div>
               </div>
             </div>
-            <a href="#services" className="nav-item">Services</a>
-            <a href="#decorative" className="nav-item">Decorative</a>
-            <a href="#about" className="nav-item">About</a>
-            <a href="/contact" className="nav-item">Contact</a>
+            <a href="#downloads" className="nav-item" onClick={() => setMobileMenuOpen(false)}>{t.nav.downloads}</a>
+            <a href="#decorative" className="nav-item" onClick={() => setMobileMenuOpen(false)}>{t.nav.decorative}</a>
+            <a href="#about" className="nav-item" onClick={() => setMobileMenuOpen(false)}>{t.nav.about}</a>
+            <a href="/contact" className="nav-item" onClick={() => setMobileMenuOpen(false)}>{t.nav.contact}</a>
+            <div className="mobile-nav-cta">
+              <a href="/contact" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-cta-btn">
+                {t.quote.dropdownCta}
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </a>
+              <div className="mobile-nav-contacts">
+                <a href="tel:+31614266177" className="mobile-nav-contact-item">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11.05 8.775l-1.625-.715a.65.65 0 00-.715.13l-.715.715a7.8 7.8 0 01-3.575-3.575l.715-.715a.65.65 0 00.13-.715L4.55 2.275A.65.65 0 003.9 1.95L2.275 2.275A.65.65 0 001.95 2.925C1.95 8.125 5.85 12.025 11.05 12.025a.65.65 0 00.65-.585l.325-1.625a.65.65 0 00-.325-.715z" fill="currentColor"/></svg>
+                  +31 (0)6 14 26 61 77
+                </a>
+                <a href="mailto:info@arkstaal.nl" className="mobile-nav-contact-item">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="3" width="10" height="7" rx="1.2" stroke="currentColor" strokeWidth="1.2"/><path d="M1.5 5l5 3.25L11.5 5" stroke="currentColor" strokeWidth="1.2"/></svg>
+                  info@arkstaal.nl
+                </a>
+              </div>
+            </div>
           </nav>
 
           <div className="header-actions">
-            <button className="search-btn" onClick={() => setSearchOpen(o => !o)} aria-label="Search">
-              <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.6"/><path d="M11 11L15 15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
+            <button className="lang-toggle" onClick={toggle} aria-label="Taal wisselen">
+              <span className={lang === 'nl' ? 'lang-active' : ''}>NL</span>
+              <span className="lang-sep">|</span>
+              <span className={lang === 'en' ? 'lang-active' : ''}>EN</span>
             </button>
-            <Link href="/login" className="my-account-btn">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="white" strokeWidth="1.4"/><path d="M2 14C2 11.2 4.7 9 8 9C11.3 9 14 11.2 14 14" stroke="white" strokeWidth="1.4" strokeLinecap="round"/></svg>
-              My Arkstaal
-            </Link>
-            <a href="/contact" className="btn btn-primary">Request quote</a>
+            <a href="/contact" className="btn btn-primary">{t.nav.requestQuote}</a>
             <button className="hamburger" onClick={() => setMobileMenuOpen(o => !o)} aria-label="Menu">
               <span style={mobileMenuOpen ? { transform: 'rotate(45deg) translate(5px, 5px)' } : {}} />
               <span style={mobileMenuOpen ? { opacity: 0 } : {}} />
@@ -226,13 +194,6 @@ export default function Home() {
           </div>
         </div>
 
-        <div className={`search-bar${searchOpen ? ' open' : ''}`}>
-          <div className="search-bar-inner">
-            <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.6"/><path d="M11 11L15 15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
-            <input ref={searchInputRef} type="text" placeholder="Search products, materials, finishes…" />
-            <kbd>ESC</kbd>
-          </div>
-        </div>
       </header>
 
       {/* HERO */}
@@ -240,16 +201,14 @@ export default function Home() {
         <div className="hero-overlay" />
         <div className="hero-main">
           <div className="hero-content">
-            <div className="hero-eyebrow-simple">Culemborg, Netherlands — Since 2014</div>
+            <div className="hero-eyebrow-simple">{t.hero.eyebrow}</div>
             <h1 className="hero-title">
-              Your specialist in<br />stainless steel & aluminium
+              {t.hero.title.split('\n').map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}
             </h1>
-            <p className="hero-subtitle">
-              Pipes, flanges and fittings from stock. Wide range, immediate delivery, material certificates included.
-            </p>
+            <p className="hero-subtitle">{t.hero.sub}</p>
             <div className="hero-actions">
-              <a href="#products" className="btn btn-white btn-lg">View assortment</a>
-              <a href="/contact" className="btn btn-outline-white btn-lg">Request a quote</a>
+              <a href="#products" className="btn btn-white btn-lg">{t.hero.cta1}</a>
+              <a href="/contact" className="btn btn-outline-white btn-lg">{t.hero.cta2}</a>
             </div>
           </div>
         </div>
@@ -259,15 +218,15 @@ export default function Home() {
       <section className="products-section fade-in" id="products">
         <div className="container">
           <div className="section-header">
-            <div className="section-label">Our assortment</div>
-            <h2 className="section-title">Metals for every application</h2>
-            <p className="section-sub">From raw stock to precision-cut parts. Select a material to explore our full range.</p>
+            <div className="section-label">{t.products.label}</div>
+            <h2 className="section-title">{t.products.title}</h2>
+            <p className="section-sub">{t.products.sub}</p>
           </div>
 
           <div className="material-tabs">
             {TABS.map(tab => (
               <button key={tab} className={`tab-btn${activeTab === tab ? ' active' : ''}`} onClick={() => setActiveTab(tab)}>
-                {TAB_LABELS[tab]}
+                {t.products.tabLabels[tab]}
               </button>
             ))}
           </div>
@@ -277,38 +236,41 @@ export default function Home() {
               <div key={tab} className={`tab-panel${activeTab === tab ? ' active' : ''}`}>
                 {TAB_PHOTOS[tab] && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img className="tab-photo" src={TAB_PHOTOS[tab]} alt={TAB_LABELS[tab]} />
+                  <img className="tab-photo" src={TAB_PHOTOS[tab]} alt={t.products.tabLabels[tab]} />
                 )}
                 <div className="products-grid">
-                  {TAB_PRODUCTS[tab].map(p => (
-                    <a key={p.title} href="#" className="product-card">
-                      {p.img && <div className="product-img"><img src={p.img} alt={p.title} /></div>}
-                      <div className="product-top">
-                        {!p.img && <div className="product-icon">
-                          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                            <rect x="3" y="10" width="22" height="8" rx="1" fill={p.iconColor}/>
-                          </svg>
-                        </div>}
-                        {p.badge && <span className="product-badge">{p.badge}</span>}
-                      </div>
-                      <div className="product-info">
-                        <h3>{p.title}</h3>
-                        <p>{p.desc}</p>
-                      </div>
-                      <span className="product-link">
-                        View products{' '}
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      </span>
-                    </a>
-                  ))}
+                  {t.products.items[tab].map((p, i) => {
+                    const img = TAB_PRODUCT_IMAGES[tab]?.[i]
+                    return (
+                      <a key={p.title} href="#" className="product-card">
+                        {img && <div className="product-img"><img src={img} alt={p.title} /></div>}
+                        <div className="product-top">
+                          {!img && <div className="product-icon">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                              <rect x="3" y="10" width="22" height="8" rx="1" fill={TAB_ICON_COLORS[tab]}/>
+                            </svg>
+                          </div>}
+                          {('badge' in p) && <span className="product-badge">{(p as { badge: string }).badge}</span>}
+                        </div>
+                        <div className="product-info">
+                          <h3>{p.title}</h3>
+                          <p>{p.desc}</p>
+                        </div>
+                        <span className="product-link">
+                          {t.products.viewProducts}{' '}
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        </span>
+                      </a>
+                    )
+                  })}
                 </div>
               </div>
             ))}
           </div>
 
           <div className="products-footer">
-            <p style={{ fontSize: '13.5px', color: 'var(--text-3)' }}>Can&apos;t find what you need? Contact our specialists.</p>
-            <a href="/contact" className="btn btn-outline">Request a quote</a>
+            <p style={{ fontSize: '13.5px', color: 'var(--text-3)' }}>{t.products.notFound}</p>
+            <a href="/contact" className="btn btn-outline">{t.products.requestQuote}</a>
           </div>
         </div>
       </section>
@@ -317,11 +279,9 @@ export default function Home() {
       <section id="decorative" className="fade-in" style={{ padding: '72px 0', background: '#0D1520', borderTop: '3px solid var(--orange)' }}>
         <div className="container">
           <div className="section-header">
-            <div className="section-label" style={{ color: 'rgba(255,255,255,.5)' }}>Specialty</div>
-            <h2 className="section-title" style={{ color: 'white' }}>Decorative Stainless Steel</h2>
-            <p className="section-sub" style={{ color: 'rgba(255,255,255,.55)' }}>
-              Our specialty — stainless steel in 20+ unique finishes. From classic Mirror and HL to Gold, Rose, Black and custom etched patterns. Perfect for architectural, interior and decorative projects.
-            </p>
+            <div className="section-label" style={{ color: 'rgba(255,255,255,.5)' }}>{t.decorative.label}</div>
+            <h2 className="section-title" style={{ color: 'white' }}>{t.decorative.title}</h2>
+            <p className="section-sub" style={{ color: 'rgba(255,255,255,.55)' }}>{t.decorative.sub}</p>
           </div>
 
           <div style={{
@@ -337,97 +297,69 @@ export default function Home() {
                 onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                 onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
               >
-                <div style={{
-                  height: '120px',
-                  background: finish.gradient,
-                  transition: 'transform .2s',
-                }} />
+                <div style={{ height: '120px', background: finish.gradient, transition: 'transform .2s' }} />
                 <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,.06)' }}>
                   <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255,255,255,.75)', letterSpacing: '.03em' }}>{finish.name}</div>
                 </div>
               </div>
             ))}
             <div style={{ background: 'rgba(255,255,255,.04)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center', minHeight: '160px' }}>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)', marginBottom: '12px' }}>+ many more finishes</div>
+              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)', marginBottom: '12px' }}>{t.decorative.moreFinishes}</div>
               <a href="/catalog.pdf" target="_blank" className="btn btn-outline-white" style={{ fontSize: '12.5px' }}>
-                Download catalogue
+                {t.decorative.downloadCatalogue}
               </a>
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: '200px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)', padding: '24px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginBottom: '6px' }}>Mirror &amp; HL finishes</div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)' }}>Classic reflective and hairline finishes for professional and architectural use.</div>
-            </div>
-            <div style={{ flex: 1, minWidth: '200px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)', padding: '24px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginBottom: '6px' }}>Colored finishes</div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)' }}>Gold, Rose, Black, Blue, Bronze, Green and more — in both mirror and HL finish.</div>
-            </div>
-            <div style={{ flex: 1, minWidth: '200px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)', padding: '24px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginBottom: '6px' }}>Etched patterns</div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)' }}>Geometric and decorative etched designs — available in gold and mirror finishes.</div>
-            </div>
+            {t.decorative.cards.map(card => (
+              <div key={card.title} style={{ flex: 1, minWidth: '200px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)', padding: '24px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginBottom: '6px' }}>{card.title}</div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)' }}>{card.desc}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* SERVICES SECTION */}
-      <section className="services-section" id="services">
+      {/* DOWNLOADS SECTION */}
+      <section className="knowledge-section fade-in" id="downloads">
         <div className="container">
-          <div className="section-header">
-            <div className="section-label">Services</div>
-            <h2 className="section-title">More than just supply</h2>
-            <p className="section-sub">From our service center in Culemborg we offer processing, finishing and fast delivery.</p>
+          <div className="section-header center">
+            <div className="section-label">{t.knowledge.label}</div>
+            <h2 className="section-title">{t.knowledge.title}</h2>
           </div>
-
-          <div className="services-grid">
-            {[
-              {
-                title: 'Foiling & Decoiling',
-                desc: 'We foil aluminium sheets and decoil rolls according to your exact wishes. Processed in our modern service center.',
-                link: 'Request service',
-              },
-              {
-                title: 'Anodizing',
-                desc: 'Anodizing creates a durable oxide layer on aluminium — available in all kinds of colors for decorative and protective purposes.',
-                link: 'Learn more',
-              },
-              {
-                title: 'Custom Cutting',
-                desc: 'We produce plates and sheets to your exact dimensions. High-quality, low-tension flat material ready for laser cutters and processing machines.',
-                link: 'Configure',
-              },
-              {
-                title: 'Material Certificates',
-                desc: 'Material certificates are sent by email before every delivery. Full traceability on every order.',
-                link: 'More info',
-              },
-              {
-                title: 'My Arkstaal Portal',
-                desc: 'Log in to your personal account to manage orders, view invoices and download your material certificates anytime.',
-                link: 'Log in',
-                href: '/login',
-              },
-              {
-                title: 'Direct Contact',
-                desc: 'Thanks to short lines of communication in our organization, we serve clients efficiently and quickly. Reach us directly.',
-                link: 'Contact us',
-                href: '#contact',
-              },
-            ].map(s => (
-              <div key={s.title} className="service-card">
-                <div className="service-icon">
-                  <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="2" y="4" width="22" height="18" rx="2" stroke="currentColor" strokeWidth="1.7"/><path d="M2 10H24" stroke="currentColor" strokeWidth="1.7"/></svg>
-                </div>
-                <h3>{s.title}</h3>
-                <p>{s.desc}</p>
-                <a href={s.href ?? '#'} className="service-link">
-                  {s.link}{' '}
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M8 3.5L11 6.5L8 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </a>
+          <div className="knowledge-grid">
+            <div className="knowledge-card blue">
+              <div className="knowledge-icon">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M5 22V4H17L21 8V22H5Z" stroke="white" strokeWidth="1.7" strokeLinejoin="round"/><path d="M17 4V8H21" stroke="white" strokeWidth="1.7" strokeLinejoin="round"/><path d="M9 12H17M9 16H14" stroke="white" strokeWidth="1.7" strokeLinecap="round"/></svg>
               </div>
-            ))}
+              <h3>{t.knowledge.cards[0].title}</h3>
+              <p>{t.knowledge.cards[0].desc}</p>
+              <a href="/catalog.pdf" target="_blank" className="knowledge-link">
+                {t.knowledge.cards[0].link} <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M8 3.5L11 6.5L8 9.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </a>
+            </div>
+            <div className="knowledge-card dark">
+              <div className="knowledge-icon">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M5 22V4H17L21 8V22H5Z" stroke="white" strokeWidth="1.7" strokeLinejoin="round"/><path d="M9 12H17M9 16H14" stroke="white" strokeWidth="1.7" strokeLinecap="round"/></svg>
+              </div>
+              <h3>{t.knowledge.cards[1].title}</h3>
+              <p>{t.knowledge.cards[1].desc}</p>
+              <a href="/contact" className="knowledge-link">
+                {t.knowledge.cards[1].link} <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M8 3.5L11 6.5L8 9.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </a>
+            </div>
+            <div className="knowledge-card light">
+              <div className="knowledge-icon">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="9" r="4" stroke="#1A2332" strokeWidth="1.7"/><path d="M5 22C5 18.7 8.6 16 13 16C17.4 16 21 18.7 21 22" stroke="#1A2332" strokeWidth="1.7" strokeLinecap="round"/></svg>
+              </div>
+              <h3>{t.knowledge.cards[2].title}</h3>
+              <p>{t.knowledge.cards[2].desc}</p>
+              <a href="/contact" className="knowledge-link orange">
+                {t.knowledge.cards[2].link} <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M8 3.5L11 6.5L8 9.5" stroke="#E8500A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -437,127 +369,120 @@ export default function Home() {
         <div className="container">
           <div className="about-top">
             <div className="about-left">
-              <div className="section-label">About Arkstaal</div>
-              <h2 className="about-headline">Your specialist in stainless steel & aluminium</h2>
+              <div className="section-label">{t.about.label}</div>
+              <h2 className="about-headline">{t.about.headline}</h2>
             </div>
             <div className="about-right">
-              <p className="about-text">Since 2014, Arkstaal B.V. supplies pipes, flanges and fittings in stainless steel from our service center in Culemborg. Thousands of articles in stock — ready to ship, with full material traceability.</p>
-              <a href="/contact" className="btn btn-outline">Get in touch</a>
+              <p className="about-text">{t.about.text}</p>
+              <a href="/contact" className="btn btn-outline">{t.about.cta}</a>
             </div>
           </div>
           <div className="about-stats-row" ref={statsRef}>
             <div className="about-stat-item">
               <div className="about-stat-num"><CountUp to={2014} from={1990} duration={1600} started={statsStarted} /></div>
-              <div className="about-stat-label">Year founded</div>
+              <div className="about-stat-label">{t.about.stats[0].label}</div>
             </div>
             <div className="about-stat-item">
               <div className="about-stat-num"><CountUp to={1000} suffix="s" duration={1800} started={statsStarted} /></div>
-              <div className="about-stat-label">Articles in stock</div>
+              <div className="about-stat-label">{t.about.stats[1].label}</div>
             </div>
             <div className="about-stat-item">
               <div className="about-stat-num"><CountUp to={20} suffix="+" duration={1400} started={statsStarted} /></div>
-              <div className="about-stat-label">Decorative finishes</div>
+              <div className="about-stat-label">{t.about.stats[2].label}</div>
             </div>
             <div className="about-stat-item">
               <div className="about-stat-num"><CountUp to={100} suffix="%" duration={1600} started={statsStarted} /></div>
-              <div className="about-stat-label">Certs by email</div>
+              <div className="about-stat-label">{t.about.stats[3].label}</div>
             </div>
           </div>
         </div>
       </section>
 
-
-      {/* KNOWLEDGE SECTION */}
-      <section className="knowledge-section fade-in">
+      {/* FAQ SECTION */}
+      <section className="about-section fade-in" id="faq" style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div className="section-header center">
-            <div className="section-label">Resources</div>
-            <h2 className="section-title">Everything you need</h2>
+            <div className="section-label">{t.faq.label}</div>
+            <h2 className="section-title">{t.faq.title}</h2>
           </div>
-          <div className="knowledge-grid">
-            <div className="knowledge-card blue">
-              <div className="knowledge-icon">
-                <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M5 22V4H17L21 8V22H5Z" stroke="white" strokeWidth="1.7" strokeLinejoin="round"/><path d="M17 4V8H21" stroke="white" strokeWidth="1.7" strokeLinejoin="round"/><path d="M9 12H17M9 16H14" stroke="white" strokeWidth="1.7" strokeLinecap="round"/></svg>
+          <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+            {t.faq.items.map((item, i) => (
+              <div key={i} style={{ borderBottom: '1px solid var(--border)' }}>
+                <button
+                  onClick={() => setFaqOpen(faqOpen === i ? null : i)}
+                  style={{
+                    width: '100%', display: 'flex', justifyContent: 'space-between',
+                    alignItems: 'center', padding: '18px 0', background: 'none',
+                    border: 'none', cursor: 'pointer', textAlign: 'left',
+                    color: 'var(--text-1)', fontSize: '15px', fontWeight: 600, gap: '16px',
+                  }}
+                >
+                  <span>{item.q}</span>
+                  <span style={{ fontSize: '22px', fontWeight: 300, color: 'var(--orange)', flexShrink: 0, lineHeight: 1 }}>
+                    {faqOpen === i ? '−' : '+'}
+                  </span>
+                </button>
+                {faqOpen === i && (
+                  <p style={{ margin: '0 0 18px', color: 'var(--text-2)', fontSize: '14.5px', lineHeight: '1.65' }}>
+                    {item.a}
+                  </p>
+                )}
               </div>
-              <h3>Decorative Catalogue</h3>
-              <p>Download our full decorative stainless steel catalogue — all finishes, patterns and specifications.</p>
-              <a href="/catalog.pdf" target="_blank" className="knowledge-link">Download PDF <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M8 3.5L11 6.5L8 9.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
-            </div>
-            <div className="knowledge-card dark">
-              <div className="knowledge-icon">
-                <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M5 22V4H17L21 8V22H5Z" stroke="white" strokeWidth="1.7" strokeLinejoin="round"/><path d="M9 12H17M9 16H14" stroke="white" strokeWidth="1.7" strokeLinecap="round"/></svg>
-              </div>
-              <h3>Material Certificates</h3>
-              <p>All our products come with material certificates, sent by email before delivery. Full traceability guaranteed.</p>
-              <a href="/contact" className="knowledge-link">Request info <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M8 3.5L11 6.5L8 9.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
-            </div>
-            <div className="knowledge-card light">
-              <div className="knowledge-icon">
-                <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="9" r="4" stroke="#1A2332" strokeWidth="1.7"/><path d="M5 22C5 18.7 8.6 16 13 16C17.4 16 21 18.7 21 22" stroke="#1A2332" strokeWidth="1.7" strokeLinecap="round"/></svg>
-              </div>
-              <h3>Talk to a specialist</h3>
-              <p>Short lines of communication — reach us directly for product advice, quotes and custom orders.</p>
-              <a href="/contact" className="knowledge-link orange">Contact us <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M8 3.5L11 6.5L8 9.5" stroke="#E8500A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
-            </div>
+            ))}
           </div>
         </div>
       </section>
-
-      {/* CONTACT SECTION */}
 
       {/* FOOTER */}
       <footer className="footer">
-
         <div className="container">
           <div className="footer-main">
             <div className="footer-brand">
-              <a href="/" className="logo" style={{ marginBottom: '16px' }}>
-                <svg width="30" height="30" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" fill="#1E293B"/><path d="M7 26L17 8L27 26H21L17 18L13 26H7Z" fill="white"/><rect x="7" y="27" width="20" height="2.5" fill="#E8500A"/></svg>
-                <span className="logo-text">Arkstaal</span>
-              </a>
-              <p className="footer-tagline">Stainless steel & aluminium specialist.<br />Service center in Culemborg — since 2014.</p>
+              <div className="footer-brand-name">Arkstaal B.V.</div>
+              <p className="footer-tagline">
+                {t.footer.tagline.split('\n').map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}
+              </p>
               <div className="footer-contact-list">
                 <a href="https://maps.google.com/?q=Erasmusweg+15+Culemborg" target="_blank">Erasmusweg 15, 4104AL Culemborg</a>
                 <a href="tel:+31614266177">+31 (0)6 14 26 61 77</a>
                 <a href="mailto:info@arkstaal.nl">info@arkstaal.nl</a>
               </div>
             </div>
-
             <div className="footer-nav">
               <div className="footer-col">
-                <h4>Products</h4>
-                <a href="#">Stainless Steel</a>
-                <a href="#">Aluminium</a>
-                <a href="#">Decorative Finishes</a>
-                <a href="#">Pipes & Flanges</a>
-                <a href="#">Fittings</a>
+                <h4>{t.footer.colProducts}</h4>
+                <a href="#">{t.footer.stainlessSteel}</a>
+                <a href="#">{t.footer.aluminium}</a>
+                <a href="#">{t.footer.decorativeFinishes}</a>
+                <a href="#">{t.footer.pipesFlanges}</a>
+                <a href="#">{t.footer.fittings}</a>
               </div>
               <div className="footer-col">
-                <h4>Services</h4>
-                <a href="#">Foiling & Decoiling</a>
-                <a href="#">Anodizing</a>
-                <a href="#">Custom cutting</a>
-                <a href="#">Material certificates</a>
-                <a href="/login">My Arkstaal</a>
+                <h4>{t.footer.colServices}</h4>
+                <a href="#">{t.footer.foilingDecoiling}</a>
+                <a href="#">{t.footer.anodizing}</a>
+                <a href="#">{t.footer.customCutting}</a>
+                <a href="#">{t.footer.materialCerts}</a>
+                <a href="/login">{t.footer.myArkstaal}</a>
               </div>
               <div className="footer-col">
-                <h4>Company</h4>
-                <a href="/#about">About Arkstaal</a>
-                <a href="/contact">Contact</a>
-                <a href="/catalog.pdf" target="_blank">Download catalogue</a>
+                <h4>{t.footer.colCompany}</h4>
+                <a href="/#about">{t.footer.aboutArkstaal}</a>
+                <a href="/contact">{t.footer.contact}</a>
+                <a href="/catalog.pdf" target="_blank">{t.footer.downloadCatalogue}</a>
               </div>
             </div>
           </div>
-
           <div className="footer-bottom">
-            <span>© 2025 Arkstaal B.V. — All rights reserved.</span>
+            <span>{t.footer.copyright}</span>
             <div className="footer-legal">
-              <a href="#">Privacy policy</a>
-              <a href="#">Terms & conditions</a>
+              <a href="#">{t.footer.privacy}</a>
+              <a href="#">{t.footer.terms}</a>
             </div>
           </div>
         </div>
       </footer>
+
     </>
   )
 }
