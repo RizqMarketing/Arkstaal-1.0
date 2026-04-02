@@ -1591,15 +1591,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 @media (max-width: 480px) {
-  .products-grid { grid-template-columns: 1fr 1fr; }
-  .product-card { padding: 14px; }
-  .product-top { margin-bottom: 8px; }
-  .product-icon { width: 32px; height: 32px; }
-  .product-icon svg { transform: scale(.75); }
-  .product-img { width: 36px; height: 36px; margin-bottom: 8px; }
-  .product-info h3 { font-size: 12.5px; font-weight: 700; margin-bottom: 0; }
-  .product-info p { display: none; }
-  .product-link { font-size: 11.5px; margin-top: 8px; }
+  .products-grid { grid-template-columns: 1fr; }
   .sustain-metrics { grid-template-columns: 1fr; }
   .hero-promises-inner { align-items: flex-start; padding: 0 24px; }
   .material-tabs {
