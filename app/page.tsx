@@ -345,11 +345,11 @@ export default function Home() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+          <div className="decorative-cards">
             {t.decorative.cards.map(card => (
-              <div key={card.title} style={{ flex: 1, minWidth: '200px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)', padding: '24px' }}>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginBottom: '6px' }}>{card.title}</div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)' }}>{card.desc}</div>
+              <div key={card.title} className="decorative-card">
+                <div className="decorative-card-title">{card.title}</div>
+                <div className="decorative-card-desc">{card.desc}</div>
               </div>
             ))}
           </div>
