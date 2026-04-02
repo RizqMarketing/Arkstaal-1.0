@@ -144,11 +144,11 @@ export const translations = {
     about: {
       label: 'Over Arkstaal',
       headline: 'Uw specialist in roestvrij staal & aluminium',
-      text: 'Sinds 2014 levert Arkstaal B.V. buizen, flenzen en fittingen in roestvrij staal vanuit ons servicecentrum in Culemborg. Duizenden artikelen op voorraad — leveringsklaar, met volledige materiaaltraceerbaarheid.',
+      text: 'Sinds 2014 levert Arkstaal B.V. buizen, flenzen en fittingen in roestvrij staal. Wij leveren op maat met volledige materiaaltraceerbaarheid.',
       cta: 'Neem contact op',
       stats: [
         { label: 'Opgericht in' },
-        { label: 'Artikelen op voorraad' },
+        { label: 'Producttypes' },
         { label: 'Decoratieve afwerkingen' },
         { label: 'Certs per e-mail' },
       ],
@@ -421,11 +421,11 @@ export const translations = {
     about: {
       label: 'About Arkstaal',
       headline: 'Your specialist in stainless steel & aluminium',
-      text: 'Since 2014, Arkstaal B.V. supplies pipes, flanges and fittings in stainless steel from our service center in Culemborg. Thousands of articles in stock — ready to ship, with full material traceability.',
+      text: 'Since 2014, Arkstaal B.V. supplies pipes, flanges and fittings in stainless steel. We deliver to order with full material traceability.',
       cta: 'Get in touch',
       stats: [
         { label: 'Year founded' },
-        { label: 'Articles in stock' },
+        { label: 'Product types' },
         { label: 'Decorative finishes' },
         { label: 'Certs by email' },
       ],

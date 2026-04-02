@@ -542,10 +542,31 @@ a { text-decoration: none; color: inherit; }
 
 /* USP TICKER */
 .usp-ticker {
-  background: var(--navy);
   overflow: hidden;
-  border-bottom: 1px solid rgba(255,255,255,.06);
   position: relative;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(255,255,255,0.015) 3px,
+      rgba(255,255,255,0.015) 6px
+    ),
+    linear-gradient(
+      180deg,
+      #3c4044 0%,
+      #252a2e 15%,
+      #1e2226 30%,
+      #2d3237 45%,
+      #1a1e22 55%,
+      #303539 70%,
+      #212528 85%,
+      #181b1e 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.6),
+    0 2px 8px rgba(0,0,0,0.5);
 }
 .usp-ticker::before,
 .usp-ticker::after {
@@ -557,13 +578,13 @@ a { text-decoration: none; color: inherit; }
   z-index: 2;
   pointer-events: none;
 }
-.usp-ticker::before { left: 0; background: linear-gradient(to right, var(--navy), transparent); }
-.usp-ticker::after  { right: 0; background: linear-gradient(to left, var(--navy), transparent); }
+.usp-ticker::before { left: 0; background: linear-gradient(to right, #1e2226, transparent); }
+.usp-ticker::after  { right: 0; background: linear-gradient(to left, #1e2226, transparent); }
 
 .usp-track {
   display: flex;
-  animation: uspScroll 18s linear infinite;
-  will-change: transform;
+  justify-content: space-evenly;
+  width: 100%;
 }
 
 @keyframes uspScroll {
@@ -578,15 +599,16 @@ a { text-decoration: none; color: inherit; }
   padding: 13px 32px;
   font-size: 12.5px;
   font-weight: 600;
-  color: rgba(255,255,255,.7);
-  letter-spacing: .04em;
+  color: rgba(210,218,225,0.75);
+  letter-spacing: .06em;
   text-transform: uppercase;
   white-space: nowrap;
-  border-right: 1px solid rgba(255,255,255,.08);
+  border-right: 1px solid rgba(255,255,255,.06);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8), 0 -1px 0 rgba(255,255,255,0.06);
 }
 .usp-dot {
   font-size: 7px;
-  color: rgba(255,255,255,.3);
+  color: rgba(180,190,200,0.4);
   flex-shrink: 0;
 }
 
@@ -1568,9 +1590,11 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 768px) {
   :root { --header-h: 80px; }
-  .usp-track { animation-duration: 10s; }
-  .usp-item { padding: 11px 16px; font-size: 11px; gap: 7px; }
-  .usp-dot { font-size: 6px; }
+  .usp-track { justify-content: center; width: 100%; }
+  .usp-item { padding: 12px 0; font-size: 12px; gap: 8px; color: rgba(230,238,245,0.9); flex: 1; justify-content: center; white-space: normal; text-align: center; border-right: 1px solid rgba(255,255,255,.08); }
+  .usp-item:nth-child(n+3) { display: none; }
+  .usp-item:last-child { border-right: none; }
+  .usp-dot { font-size: 7px; color: rgba(200,215,225,0.6); flex-shrink: 0; }
   .topbar { display: none; }
   .nav { display: none; }
   .hamburger { display: flex; }

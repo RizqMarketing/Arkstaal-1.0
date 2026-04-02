@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import emailjs from '@emailjs/browser'
 import { useLanguage } from './components/LanguageContext'
+
+const EMAILJS_SERVICE  = 'service_hizzd0p'
+const EMAILJS_TEMPLATE = 'template_q36n8tu'
+const EMAILJS_KEY      = 'ev8gaGrxKoiItt1lV'
 
 const TABS = ['aluminium', 'steel', 'stainless', 'copper', 'brass', 'nonferrous', 'fittings'] as const
 type Tab = typeof TABS[number]
@@ -71,7 +76,10 @@ export default function Home() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null)
   const [quoteOpen, setQuoteOpen] = useState(false)
   const [quoteSent, setQuoteSent] = useState(false)
+  const [quoteSending, setQuoteSending] = useState(false)
+  const [quoteError, setQuoteError] = useState(false)
   const statsRef = useRef<HTMLDivElement>(null)
+  const quoteFormRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -84,10 +92,21 @@ export default function Home() {
     return () => { document.body.style.overflow = '' }
   }, [mobileMenuOpen, quoteOpen])
 
-  const handleQuoteSubmit = (e: React.FormEvent) => {
+  const handleQuoteSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setQuoteSent(true)
-    setTimeout(() => { setQuoteSent(false); setQuoteOpen(false) }, 3000)
+    if (!quoteFormRef.current) return
+    setQuoteSending(true)
+    try {
+      await emailjs.sendForm(EMAILJS_SERVICE, EMAILJS_TEMPLATE, quoteFormRef.current, EMAILJS_KEY)
+      setQuoteSent(true)
+      quoteFormRef.current.reset()
+      setTimeout(() => { setQuoteSent(false); setQuoteOpen(false) }, 3000)
+    } catch {
+      setQuoteError(true)
+      setTimeout(() => setQuoteError(false), 4000)
+    } finally {
+      setQuoteSending(false)
+    }
   }
 
   useEffect(() => {
@@ -224,29 +243,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* USP TICKER */}
-      {(() => {
-        const usps = [
-          lang === 'nl' ? 'Breed assortiment metalen' : 'Wide range of metals',
-          lang === 'nl' ? 'Maatwerk op aanvraag' : 'Custom orders available',
-          lang === 'nl' ? 'Snelle offerte' : 'Fast quote',
-          lang === 'nl' ? 'Persoonlijk advies' : 'Personal advice',
-          lang === 'nl' ? 'Roestvrij staal & aluminium' : 'Stainless steel & aluminium',
-          lang === 'nl' ? 'Specialist in metaaldistributie' : 'Metal distribution specialist',
-        ]
-        return (
-          <div className="usp-ticker">
-            <div className="usp-track">
-              {[...usps, ...usps].map((text, i) => (
-                <span className="usp-item" key={i} aria-hidden={i >= usps.length}>
-                  <span className="usp-dot">✦</span>
-                  {text}
-                </span>
-              ))}
-            </div>
-          </div>
-        )
-      })()}
 
       {/* PRODUCTS SECTION */}
       <section className="products-section fade-in" id="products">
@@ -409,7 +405,7 @@ export default function Home() {
               <div className="about-stat-label">{t.about.stats[0].label}</div>
             </div>
             <div className="about-stat-item">
-              <div className="about-stat-num"><CountUp to={1000} suffix="s" duration={1800} started={statsStarted} /></div>
+              <div className="about-stat-num"><CountUp to={100} suffix="+" duration={1800} started={statsStarted} /></div>
               <div className="about-stat-label">{t.about.stats[1].label}</div>
             </div>
             <div className="about-stat-item">
@@ -531,39 +527,40 @@ export default function Home() {
                 <p>{lang === 'nl' ? 'We nemen zo snel mogelijk contact met u op.' : 'We will get back to you as soon as possible.'}</p>
               </div>
             ) : (
-              <form className="qmodal-form" onSubmit={handleQuoteSubmit}>
+              <form className="qmodal-form" onSubmit={handleQuoteSubmit} ref={quoteFormRef}>
                 <div className="qmodal-row">
                   <div className="qmodal-field">
                     <label>{t.contact.name}</label>
-                    <input type="text" placeholder="Jan de Vries" required />
+                    <input type="text" name="from_name" placeholder="Jan de Vries" required />
                   </div>
                   <div className="qmodal-field">
                     <label>{t.contact.company}</label>
-                    <input type="text" placeholder="Bedrijfsnaam B.V." />
+                    <input type="text" name="company" placeholder="Bedrijfsnaam B.V." />
                   </div>
                 </div>
                 <div className="qmodal-row">
                   <div className="qmodal-field">
                     <label>{t.contact.emailField}</label>
-                    <input type="email" placeholder="jan@bedrijf.nl" required />
+                    <input type="email" name="from_email" placeholder="jan@bedrijf.nl" required />
                   </div>
                   <div className="qmodal-field">
                     <label>{t.contact.phoneField}</label>
-                    <input type="tel" placeholder="+31…" />
+                    <input type="tel" name="phone" placeholder="+31…" />
                   </div>
                 </div>
                 <div className="qmodal-field">
                   <label>{t.contact.subject}</label>
-                  <select>
+                  <select name="subject">
                     <option value="">{t.contact.selectTopic}</option>
                     {t.contact.topics.map(topic => <option key={topic}>{topic}</option>)}
                   </select>
                 </div>
                 <div className="qmodal-field">
                   <label>{t.contact.message}</label>
-                  <textarea placeholder={t.contact.messagePlaceholder} rows={4} />
+                  <textarea name="message" placeholder={t.contact.messagePlaceholder} rows={4} />
                 </div>
-                <button type="submit" className="qmodal-submit">{t.contact.send}
+                <button type="submit" className="qmodal-submit" disabled={quoteSending}>
+                  {quoteSending ? '...' : quoteError ? 'Fout, probeer opnieuw' : t.contact.send}
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M9 3L14 8L9 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               </form>

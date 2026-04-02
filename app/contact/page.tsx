@@ -1,13 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import emailjs from '@emailjs/browser'
 import { useLanguage } from '../components/LanguageContext'
+
+const EMAILJS_SERVICE  = 'service_hizzd0p'
+const EMAILJS_TEMPLATE = 'template_q36n8tu'
+const EMAILJS_KEY      = 'ev8gaGrxKoiItt1lV'
 
 export default function ContactPage() {
   const { lang, t, toggle } = useLanguage()
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [formState, setFormState] = useState<'idle' | 'success'>('idle')
+  const [formState, setFormState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+  const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -20,10 +26,19 @@ export default function ContactPage() {
     return () => { document.body.style.overflow = '' }
   }, [mobileMenuOpen])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setFormState('success')
-    setTimeout(() => setFormState('idle'), 4000)
+    if (!formRef.current) return
+    setFormState('sending')
+    try {
+      await emailjs.sendForm(EMAILJS_SERVICE, EMAILJS_TEMPLATE, formRef.current, EMAILJS_KEY)
+      setFormState('success')
+      formRef.current.reset()
+      setTimeout(() => setFormState('idle'), 4000)
+    } catch {
+      setFormState('error')
+      setTimeout(() => setFormState('idle'), 4000)
+    }
   }
 
   return (
@@ -161,31 +176,31 @@ export default function ContactPage() {
             </div>
 
             {/* RIGHT: FORM */}
-            <form className="contact-page-form" onSubmit={handleSubmit}>
+            <form className="contact-page-form" onSubmit={handleSubmit} ref={formRef}>
               <div className="contact-page-form-title">{t.contact.formTitle}</div>
               <div className="contact-row">
                 <div className="contact-field">
                   <label>{t.contact.name}</label>
-                  <input type="text" placeholder="Jan de Vries" required />
+                  <input type="text" name="from_name" placeholder="Jan de Vries" required />
                 </div>
                 <div className="contact-field">
                   <label>{t.contact.company}</label>
-                  <input type="text" placeholder="Bedrijfsnaam B.V." />
+                  <input type="text" name="company" placeholder="Bedrijfsnaam B.V." />
                 </div>
               </div>
               <div className="contact-row">
                 <div className="contact-field">
                   <label>{t.contact.emailField}</label>
-                  <input type="email" placeholder="jan@bedrijf.nl" required />
+                  <input type="email" name="from_email" placeholder="jan@bedrijf.nl" required />
                 </div>
                 <div className="contact-field">
                   <label>{t.contact.phoneField} <span style={{ fontWeight: 400, opacity: .6 }}>{t.contact.phoneOptional}</span></label>
-                  <input type="tel" placeholder="+31…" />
+                  <input type="tel" name="phone" placeholder="+31…" />
                 </div>
               </div>
               <div className="contact-field">
                 <label>{t.contact.subject}</label>
-                <select>
+                <select name="subject">
                   <option value="">{t.contact.selectTopic}</option>
                   {t.contact.topics.map(topic => (
                     <option key={topic}>{topic}</option>
@@ -194,10 +209,10 @@ export default function ContactPage() {
               </div>
               <div className="contact-field">
                 <label>{t.contact.message}</label>
-                <textarea placeholder={t.contact.messagePlaceholder} rows={5} />
+                <textarea name="message" placeholder={t.contact.messagePlaceholder} rows={5} />
               </div>
-              <button type="submit" className="contact-submit">
-                {formState === 'success' ? t.contact.sent : t.contact.send}
+              <button type="submit" className="contact-submit" disabled={formState === 'sending'}>
+                {formState === 'sending' ? '...' : formState === 'success' ? t.contact.sent : formState === 'error' ? 'Fout, probeer opnieuw' : t.contact.send}
               </button>
             </form>
 
