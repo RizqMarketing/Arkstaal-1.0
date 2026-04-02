@@ -225,27 +225,28 @@ export default function Home() {
       </section>
 
       {/* USP TICKER */}
-      <div className="usp-ticker">
-        <div className="usp-track">
-          {[...Array(2)].map((_, ri) => (
-            <div className="usp-list" key={ri} aria-hidden={ri === 1}>
-              {[
-                { icon: '✦', text: lang === 'nl' ? 'Breed assortiment metalen' : 'Wide range of metals' },
-                { icon: '✦', text: lang === 'nl' ? 'Maatwerk op aanvraag' : 'Custom orders available' },
-                { icon: '✦', text: lang === 'nl' ? 'Snelle offerte' : 'Fast quote' },
-                { icon: '✦', text: lang === 'nl' ? 'Persoonlijk advies' : 'Personal advice' },
-                { icon: '✦', text: lang === 'nl' ? 'Roestvrij staal & aluminium' : 'Stainless steel & aluminium' },
-                { icon: '✦', text: lang === 'nl' ? 'Specialist in metaaldistributie' : 'Metal distribution specialist' },
-              ].map((usp, i) => (
-                <span className="usp-item" key={i}>
-                  <span className="usp-dot">{usp.icon}</span>
-                  {usp.text}
+      {(() => {
+        const usps = [
+          lang === 'nl' ? 'Breed assortiment metalen' : 'Wide range of metals',
+          lang === 'nl' ? 'Maatwerk op aanvraag' : 'Custom orders available',
+          lang === 'nl' ? 'Snelle offerte' : 'Fast quote',
+          lang === 'nl' ? 'Persoonlijk advies' : 'Personal advice',
+          lang === 'nl' ? 'Roestvrij staal & aluminium' : 'Stainless steel & aluminium',
+          lang === 'nl' ? 'Specialist in metaaldistributie' : 'Metal distribution specialist',
+        ]
+        return (
+          <div className="usp-ticker">
+            <div className="usp-track">
+              {[...usps, ...usps].map((text, i) => (
+                <span className="usp-item" key={i} aria-hidden={i >= usps.length}>
+                  <span className="usp-dot">✦</span>
+                  {text}
                 </span>
               ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        )
+      })()}
 
       {/* PRODUCTS SECTION */}
       <section className="products-section fade-in" id="products">

@@ -562,21 +562,16 @@ a { text-decoration: none; color: inherit; }
 
 .usp-track {
   display: flex;
-  width: max-content;
-  animation: uspScroll 36s linear infinite;
+  animation: uspScroll 34s linear infinite;
+  will-change: transform;
 }
 .usp-track:hover { animation-play-state: paused; }
 
 @keyframes uspScroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-.usp-list {
-  display: flex;
-  align-items: center;
-  padding: 0;
-}
 .usp-item {
   display: inline-flex;
   align-items: center;
