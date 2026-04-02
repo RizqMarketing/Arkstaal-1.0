@@ -218,7 +218,7 @@ export default function Home() {
             <p className="hero-subtitle">{t.hero.sub}</p>
             <div className="hero-actions">
               <a href="#products" className="btn btn-white btn-lg">{t.hero.cta1}</a>
-              <a href="/contact" className="btn btn-outline-white btn-lg">{t.hero.cta2}</a>
+              <button type="button" onClick={() => setQuoteOpen(true)} className="btn btn-outline-white btn-lg">{t.hero.cta2}</button>
             </div>
           </div>
         </div>
