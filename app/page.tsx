@@ -224,6 +224,31 @@ export default function Home() {
         </div>
       </section>
 
+      {/* USP TICKER */}
+      <div className="usp-ticker">
+        <div className="usp-track">
+          {[...Array(2)].map((_, ri) => (
+            <div className="usp-list" key={ri} aria-hidden={ri === 1}>
+              {[
+                { icon: '✦', text: lang === 'nl' ? 'Volgende dag levering' : 'Next day delivery' },
+                { icon: '✦', text: lang === 'nl' ? 'ISO 9001 gecertificeerd' : 'ISO 9001 certified' },
+                { icon: '✦', text: lang === 'nl' ? 'Breed assortiment metalen' : 'Wide range of metals' },
+                { icon: '✦', text: lang === 'nl' ? 'Maatwerk op aanvraag' : 'Custom orders available' },
+                { icon: '✦', text: lang === 'nl' ? 'Eigen magazijn & voorraad' : 'In-house stock & warehouse' },
+                { icon: '✦', text: lang === 'nl' ? 'Snelle offerte binnen 24u' : 'Fast quote within 24h' },
+                { icon: '✦', text: lang === 'nl' ? 'Persoonlijk advies' : 'Personal advice' },
+                { icon: '✦', text: lang === 'nl' ? 'Betrouwbare kwaliteitscontrole' : 'Reliable quality control' },
+              ].map((usp, i) => (
+                <span className="usp-item" key={i}>
+                  <span className="usp-dot">{usp.icon}</span>
+                  {usp.text}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* PRODUCTS SECTION */}
       <section className="products-section fade-in" id="products">
         <div className="container">

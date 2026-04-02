@@ -540,6 +540,62 @@ a { text-decoration: none; color: inherit; }
   background: white;
 }
 
+/* USP TICKER */
+.usp-ticker {
+  background: var(--navy);
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  position: relative;
+}
+.usp-ticker::before,
+.usp-ticker::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.usp-ticker::before { left: 0; background: linear-gradient(to right, var(--navy), transparent); }
+.usp-ticker::after  { right: 0; background: linear-gradient(to left, var(--navy), transparent); }
+
+.usp-track {
+  display: flex;
+  width: max-content;
+  animation: uspScroll 36s linear infinite;
+}
+.usp-track:hover { animation-play-state: paused; }
+
+@keyframes uspScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.usp-list {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+.usp-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 32px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,.7);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+.usp-dot {
+  font-size: 7px;
+  color: rgba(255,255,255,.3);
+  flex-shrink: 0;
+}
+
 /* HERO */
 .hero {
   background-image: url('/slider2.webp');
