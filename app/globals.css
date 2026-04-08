@@ -1579,11 +1579,9 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 900px) {
   .about-top { grid-template-columns: 1fr; gap: 32px; }
-  .about-stats-row { grid-template-columns: repeat(2, 1fr); gap: 0; align-items: center; }
-  .about-stat-item + .about-stat-item { border-left: none; padding-left: 0; border-top: none; padding-top: 0; }
-  .about-stat-item { padding: 24px 0; }
-  .about-stat-item:nth-child(even) { padding-left: 28px; border-left: 1px solid rgba(255,255,255,.15); padding-top: 24px; }
-  .about-stat-item:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.15); padding-top: 24px; }
+  .about-stats-row { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .about-stat-item + .about-stat-item { border-left: none; padding-left: 0; }
+  .about-stat-item { padding: 20px; background: rgba(255,255,255,.04); border-radius: 10px; text-align: center; }
   .sawservice-grid { grid-template-columns: 1fr; }
   .sawservice-img { height: 280px; order: -1; }
 }

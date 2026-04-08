@@ -64,7 +64,7 @@ function CountUp({ to, from = 0, suffix = '', duration = 1800, started }: { to: 
     }
     requestAnimationFrame(raf)
   }, [started, to, from, duration])
-  return <>{count}{suffix}</>
+  return <span className="notranslate" translate="no">{count}{suffix}</span>
 }
 
 export default function Home() {
